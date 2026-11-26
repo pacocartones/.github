@@ -1,0 +1,107 @@
+name: Commit policy
+
+# Reusable, for pull_request events. Checks the new commits of the pull request only
+# (base..head, never the history before):
+#  1. A commit whose author or committer looks like the maintainer (the maintainer name
+#     or login, or the login's GitHub noreply address) must use exactly the maintainer
+#     name and email.
+#  2. Such a commit carries no AI co-author trailer or "generated with/by" footer.
+#     Other contributors keep their own identities and attribution choices.
+#  3. A pull request from a branch of the repository itself uses a branch name that
+#     matches `branch-pattern`. Branches in forks are not checked; Dependabot's
+#     dependabot/* branches are exempt.
+# Ported from free-llm-api-hub's scripts/check-commit-policy.sh. tests/commit-policy.test.mjs
+# runs the script below as it is written here.
+on:
+  workflow_call:
+    inputs:
+      maintainer-name:
+        description: The maintainer's git user.name.
+        type: string
+        default: Paco Cartones
+      maintainer-email:
+        description: The maintainer's git user.email.
+        type: string
+        default: 253313177+pacocartones@users.noreply.github.com
+      maintainer-login:
+        description: The maintainer's GitHub login.
+        type: string
+        default: pacocartones
+      branch-pattern:
+        description: Extended regular expression that branch names must match.
+        type: string
+        default: '^(feat|fix|docs|data|test|ci|chore|refactor)/[a-z0-9-]+$'
+
+permissions: {}
+
+jobs:
+  commits:
+    name: Commit policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check the commits of this pull request
+        id: policy
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MAINTAINER_NAME: ${{ inputs.maintainer-name }}
+          MAINTAINER_EMAIL: ${{ inputs.maintainer-email }}
+          MAINTAINER_LOGIN: ${{ inputs.maintainer-login }}
+          BRANCH_PATTERN: ${{ inputs.branch-pattern }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${BASE_SHA:-}" ] || [ -z "${HEAD_SHA:-}" ]; then
+            echo "::notice title=Commit policy::Not a pull request event; nothing to check."
+            exit 0
+          fi
+
+          ai_pattern='co-authored-by:[[:space:]]*(claude|gpt|chatgpt|copilot|codebuff|gemini|cursor|aider|devin|codex|anthropic|openai|agent:)|generated (with|by) (claude|chatgpt|copilot|codex|gemini|cursor|an? ai)|🤖'
+          lower() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+          name_l="$(lower "$MAINTAINER_NAME")"
+          login_l="$(lower "$MAINTAINER_LOGIN")"
+          email_l="$(lower "$MAINTAINER_EMAIL")"
+          noreply_l="${login_l}@users.noreply.github.com"
+
+          fail=0
+          while IFS= read -r sha; do
+            [ -n "$sha" ] || continue
+            maintainer=0
+            for pair in "$(git log -1 --format='%an|%ae' "$sha")" "$(git log -1 --format='%cn|%ce' "$sha")"; do
+              name="${pair%%|*}"; email="${pair#*|}"
+              n="$(lower "$name")"; e="$(lower "$email")"
+              if [ "$n" = "$name_l" ] || [ "$n" = "$login_l" ] || [ "$e" = "$email_l" ] || [ "$e" = "$noreply_l" ] || [ "${e#*+}" = "$noreply_l" ]; then
+                maintainer=1
+                if [ "$name" != "$MAINTAINER_NAME" ] || [ "$email" != "$MAINTAINER_EMAIL" ]; then
+                  echo "::error title=Maintainer identity::${sha:0:10} is written as '$name <$email>'; use '$MAINTAINER_NAME <$MAINTAINER_EMAIL>' (git config user.name and user.email)."
+                  fail=1
+                fi
+              fi
+            done
+            if [ "$maintainer" -eq 1 ] && git log -1 --format=%B "$sha" | grep -Eiq "$ai_pattern"; then
+              echo "::error title=AI attribution in a maintainer commit::${sha:0:10} carries an AI trailer or footer; remove it (git rebase -i, reword)."
+              fail=1
+            fi
+          done < <(git rev-list --no-merges "${BASE_SHA}..${HEAD_SHA}")
+
+          if [ -n "${GITHUB_HEAD_REF:-}" ] && [ -f "${GITHUB_EVENT_PATH:-}" ]; then
+            head_repo="$(jq -r '.pull_request.head.repo.full_name // empty' "$GITHUB_EVENT_PATH")"
+            pr_author="$(jq -r '.pull_request.user.login // empty' "$GITHUB_EVENT_PATH")"
+            dependabot=0
+            if [ "$pr_author" = 'dependabot[bot]' ] && [[ "$GITHUB_HEAD_REF" == dependabot/* ]]; then dependabot=1; fi
+            if [ "$head_repo" = "${GITHUB_REPOSITORY:-}" ] && [ "$dependabot" -eq 0 ] && ! printf '%s' "$GITHUB_HEAD_REF" | grep -Eq -- "$BRANCH_PATTERN"; then
+              echo "::error title=Branch name::The branch name '$GITHUB_HEAD_REF' does not match $BRANCH_PATTERN. Use <type>/<short-slug>, for example fix/broken-link; rename the branch and push again."
+              fail=1
+            fi
+          fi
+
+          [ "$fail" -eq 0 ] && echo "commit policy: ok"
+          exit "$fail"

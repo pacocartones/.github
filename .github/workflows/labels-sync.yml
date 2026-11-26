@@ -1,0 +1,64 @@
+name: Labels sync
+
+# Reusable: create or update the caller repository's labels from a TSV file
+# (default .github/labels.tsv). One label per line: name<TAB>color<TAB>description.
+# The color is six hex digits without '#'; the description may be empty. Blank lines
+# and lines starting with '#' are ignored. Labels missing from the file are kept
+# unless `prune` is true. Call it from a workflow_dispatch workflow.
+on:
+  workflow_call:
+    inputs:
+      labels-file:
+        description: TSV file with the labels, relative to the repository root.
+        type: string
+        default: .github/labels.tsv
+      prune:
+        description: Delete labels that are not in the file.
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  sync:
+    name: Sync labels
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Sync labels from the file
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          LABELS_FILE: ${{ inputs.labels-file }}
+          PRUNE: ${{ inputs.prune }}
+        run: |
+          set -euo pipefail
+          [ -f "$LABELS_FILE" ] || { echo "::error title=Labels file::$LABELS_FILE not found"; exit 1; }
+          wanted="$(mktemp)"
+          fail=0
+          while IFS=$'\t' read -r name color description || [ -n "$name" ]; do
+            name="${name%$'\r'}"; color="${color%$'\r'}"; description="${description%$'\r'}"
+            case "$name" in ''|'#'*) continue ;; esac
+            if ! printf '%s' "$color" | grep -Eq '^[0-9a-fA-F]{6}$'; then
+              echo "::error title=Label color::'$name' has color '$color'; use six hex digits without '#'."
+              fail=1
+              continue
+            fi
+            printf '%s\n' "$name" >> "$wanted"
+            gh label create "$name" --color "$color" --description "$description" --force
+          done < "$LABELS_FILE"
+          if [ "$PRUNE" = true ] && [ "$fail" -eq 0 ]; then
+            gh label list --limit 1000 --json name --jq '.[].name' | while IFS= read -r existing; do
+              if ! grep -Fxq -- "$existing" "$wanted"; then
+                gh label delete "$existing" --yes
+              fi
+            done
+          fi
+          exit "$fail"
