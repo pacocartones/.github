@@ -1,0 +1,42 @@
+name: CodeQL
+
+# Reusable: CodeQL code scanning for one language (JavaScript/TypeScript by default).
+# For several languages, call it once per language, for example from a matrix.
+on:
+  workflow_call:
+    inputs:
+      language:
+        description: CodeQL language, for example javascript-typescript, python, actions.
+        type: string
+        default: javascript-typescript
+      build-mode:
+        description: CodeQL build mode (none, autobuild or manual).
+        type: string
+        default: none
+
+permissions: {}
+
+jobs:
+  analyze:
+    name: Analyze (${{ inputs.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        with:
+          languages: ${{ inputs.language }}
+          build-mode: ${{ inputs.build-mode }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        with:
+          category: /language:${{ inputs.language }}

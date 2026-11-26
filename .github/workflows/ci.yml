@@ -1,0 +1,45 @@
+name: CI
+
+# This repository's own checks: actionlint on every workflow, the policy tests
+# (npm test) through the reusable Verify workflow, and the reusable Commit policy.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
+
+jobs:
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Installed with the runner's Go at a fixed version; the Go checksum database
+      # verifies the module. actionlint also runs shellcheck on every run: script.
+      - name: Install actionlint
+        run: GOBIN="$RUNNER_TEMP/bin" go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+      - name: Run actionlint
+        run: '"$RUNNER_TEMP/bin/actionlint" -color'
+
+  verify:
+    name: Tests
+    permissions:
+      contents: read
+    uses: ./.github/workflows/verify.yml
+
+  commit-policy:
+    name: Commit policy
+    if: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/commit-policy.yml

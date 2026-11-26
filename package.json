@@ -1,0 +1,8 @@
+{
+  "name": "pacocartones-github",
+  "private": true,
+  "description": "Policy tests for the reusable workflows in .github/workflows.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}
