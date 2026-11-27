@@ -1,6 +1,6 @@
 # Third-party notices
 
-The community files in this repository come from the shared standard (standards v2) of pacocartones/dasousa-contributors-strategy, which adopted them from the sources below. Copied from that repository at commit 6caf476.
+The community files in this repository come from the shared standard (standards v2) of pacocartones/dasousa-contributors-strategy, which adopted them from the sources below. Copied from that repository unchanged: the community files at commit 6caf476, GOVERNANCE.md, MAINTAINERS.md and LICENSES/Apache-2.0.txt at commit 38ac8a1.
 
 ## Adopted files
 
@@ -14,6 +14,7 @@ These files are copied unchanged from `templates/` in pacocartones/dasousa-contr
 | `.github/pull_request_template.md` | [stevemao/github-issue-templates](https://github.com/stevemao/github-issue-templates) `checklist/PULL_REQUEST_TEMPLATE.md` @ `82f4289` | CC0 1.0 | «What and why» and «AI assistance» sections added. |
 | `.github/ISSUE_TEMPLATE/bug.yml`, `.github/ISSUE_TEMPLATE/feature.yml`, `.github/ISSUE_TEMPLATE/docs.yml`, `.github/ISSUE_TEMPLATE/data.yml` | GitHub Docs issue-form examples, `github/docs` @ `df6faa2`; [vitejs/vite](https://github.com/vitejs/vite/tree/main/.github/ISSUE_TEMPLATE) `bug_report.yml`, `feature_request.yml`, `docs.yml` @ `7d0c054` | CC BY 4.0; MIT (notice below) | `type:` set to the account type, no labels, Vite-specific fields and links removed; `data.yml` reuses the docs form's structure. |
 | `.github/ISSUE_TEMPLATE/task.yml`, `.github/ISSUE_TEMPLATE/config.yml` | GitHub Docs issue-form and `config.yml` examples, `github/docs` @ `df6faa2` | CC BY 4.0 | Minimal Task form; our contact links. |
+| `GOVERNANCE.md`, `MAINTAINERS.md` | [cncf/project-template](https://github.com/cncf/project-template) `GOVERNANCE-maintainer.md`, `MAINTAINERS.md` @ `e66ba44` | Apache-2.0 (`LICENSES/Apache-2.0.txt`) | Trimmed for one maintainer: council, voting, meetings, CNCF resources and affiliations removed; scope column added. |
 | `AI_POLICY.md`, `SUPPORT.md` | Own text; the policies and page they link to informed them. No text copied: those policies state no licence. | — | — |
 
 Not copied, only linked: `github/.github` (no licence), the projects' AI policies (no licence), and CC BY-SA guides other than the Contributor Covenant.

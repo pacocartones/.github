@@ -192,6 +192,10 @@ Copy the SHA it prints into `uses: pacocartones/.github/.github/workflows/<file>
 5. text an outsider controls (titles, bodies, branch names) never appears in a `run:` script;
 6. the reusable workflows are `workflow_call` only and read no secrets.
 
+## Releases
+
+This repository has no releases, tags or CHANGELOG: callers pin its reusable workflows by full commit SHA (see [Pinning by SHA](#pinning-by-sha)). Maintainers and governance: [MAINTAINERS.md](MAINTAINERS.md), [GOVERNANCE.md](GOVERNANCE.md).
+
 ## Developing this repository
 
 [`ci.yml`](.github/workflows/ci.yml) runs on every pull request and push to `main`: [actionlint](https://github.com/rhysd/actionlint) (with shellcheck) on every workflow, the tests through the local `verify.yml`, and the local `commit-policy.yml`.
