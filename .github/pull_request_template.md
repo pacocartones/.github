@@ -1,21 +1,27 @@
-<!-- Thanks for contributing. Delete any section that does not apply. -->
+<!-- Adapted from stevemao/github-issue-templates, checklist/PULL_REQUEST_TEMPLATE.md (commit 82f4289), CC0 1.0. Modified: a summary and AI-assistance section added. -->
 
-## What changed
+### What and why
 
-<!-- One or two sentences. Use `Closes #123` only if this fully resolves the issue; otherwise `Related to #123`. -->
+Closes #
 
-## Why
+### All Submissions:
 
-<!-- The problem this solves, or the issue it comes from. -->
+* [ ] Have you followed the guidelines in our Contributing document?
+* [ ] Have you checked to ensure there aren't other open [Pull Requests](../../../pulls) for the same update/change?
 
-## How I tested it
+<!-- You can erase any parts of this template not applicable to your Pull Request. -->
 
-<!-- The exact commands you ran and their results (for example `npm test`), plus any manual checks.
-If a check could not run, say which one and why. -->
+### New Feature Submissions:
 
-## Checklist
+1. [ ] Does your submission pass tests?
+2. [ ] Have you lint your code locally prior to submission?
 
-- [ ] The branch is named `<type>/<short-slug>` (feat, fix, docs, data, test, ci, chore, refactor), or the pull request comes from a fork.
-- [ ] I ran the repository's checks and they pass.
-- [ ] I updated the docs for any user-visible change.
-- [ ] (Optional) I used AI tools for part of this change, and I have read and tested it myself.
+### Changes to Core Features:
+
+* [ ] Have you added an explanation of what your changes do and why you'd like us to include them?
+* [ ] Have you written new tests for your core changes, as applicable?
+* [ ] Have you successfully ran tests with your changes locally?
+
+### AI assistance:
+
+* [ ] No AI tool helped with this change, or its commits carry `Assisted-by: <tool>/<model>` and I have reviewed every line.

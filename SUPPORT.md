@@ -1,10 +1,10 @@
-# Getting help
+# Support
 
-This is the default support guide for repositories owned by [@pacocartones](https://github.com/pacocartones) that do not have their own.
+*Own text, informed by GitHub Docs, [Adding support resources to your project](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-support-resources-to-your-project).*
 
-- **Read the docs first.** Start with the repository's README and any `docs/` folder it has.
-- **Questions and ideas:** use the repository's Discussions tab when it is enabled; otherwise open an issue.
-- **Bugs and feature requests:** open an issue with one of the templates. Search open and closed issues first.
-- **Security problems:** do not open a public issue; follow [SECURITY.md](https://github.com/pacocartones/.github/blob/main/SECURITY.md).
+- **A question about using a project:** read its README first. If that does not answer it, open a discussion where the repository has Discussions, or an issue that says it is a question.
+- **A bug or a feature request:** open an issue with the matching form; see [CONTRIBUTING.md](CONTRIBUTING.md).
+- **A security vulnerability:** never in public; follow [SECURITY.md](SECURITY.md).
+- **A Code of Conduct report:** the contact in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
-Projects are maintained in spare time, so answers can take a few days. A small, reproducible example gets the fastest answer.
+Support is best effort.

@@ -1,5 +1,11 @@
-blank_issues_enabled: true
+# Adapted from the GitHub Docs config.yml example in "Configuring issue templates for your repository"
+# (github/docs commit df6faa2, CC BY 4.0, https://creativecommons.org/licenses/by/4.0/).
+# Modified: our contact links.
+blank_issues_enabled: false
 contact_links:
-  - name: Report a security vulnerability
+  - name: Questions and support
+    url: https://github.com/pacocartones/.github/blob/main/SUPPORT.md
+    about: Please ask questions here, not in an issue.
+  - name: Security vulnerability
     url: https://github.com/pacocartones/.github/blob/main/SECURITY.md
-    about: Do not open a public issue. Report it privately from the repository's Security tab.
+    about: Please report security vulnerabilities privately, as described here.
