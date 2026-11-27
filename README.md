@@ -145,9 +145,9 @@ Permissions: `contents: read`, `issues: write`.
 File format: one label per line, tab-separated `name`, `color` (six hex digits, no `#`) and `description` (may be empty). Blank lines and lines starting with `#` are ignored.
 
 ```tsv
-# name	color	description
-bug	d73a4a	Something does not work
-enhancement	a2eeef	New feature or request
+# name	color	description (labels v2: see .github/labels.tsv)
+needs info	fbca04	Waiting for more information from the author
+good first issue	7057ff	Good for newcomers
 ```
 
 ```yaml
