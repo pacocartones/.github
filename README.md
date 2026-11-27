@@ -10,21 +10,22 @@ Default community health files and reusable GitHub Actions workflows for [@pacoc
 
 ## Community health files
 
-GitHub shows these files in any public repository owned by @pacocartones that has no file of the same kind of its own (in its root, `.github/` or `docs/`). A repository's own file always wins.
+GitHub uses these files in every repository owned by @pacocartones, private ones included, that has no file of the same kind of its own (in its root, `.github/` or `docs/`); this repository itself must stay public. A repository's own file always wins ([GitHub Docs](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file)). They are the adopted files of the shared standard (standards v2 in pacocartones/dasousa-contributors-strategy); sources and licences are in [`THIRD_PARTY.md`](THIRD_PARTY.md).
 
 | File | Purpose |
 |---|---|
-| [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Expected behavior and how to report a concern. |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Short, generic workflow: issue first, branch naming, run the repository's checks. Points to each repository's own docs. |
-| [`SECURITY.md`](SECURITY.md) | Report vulnerabilities privately through the Security tab. |
+| [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Contributor Covenant 3.0, unmodified except the contact. Repositories never keep their own copy. |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Generic contribution guide. Links to [`AI_POLICY.md`](AI_POLICY.md), which is kept here for that link (it is not a community health file). |
+| [`SECURITY.md`](SECURITY.md) | Report vulnerabilities privately through GitHub private vulnerability reporting. |
 | [`SUPPORT.md`](SUPPORT.md) | Where to ask questions and report bugs. |
-| [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/) | Bug report and feature request forms, plus a link to the security policy. |
+| [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/) | One form per issue type (Bug, Feature, Docs, Data, Task), each setting `type:` and no labels, plus `config.yml` with the support and security links. |
 | [`.github/pull_request_template.md`](.github/pull_request_template.md) | What changed, why, how it was tested. |
 
 Notes:
 
 - Issue templates are all-or-nothing: if a repository has any file in its own `.github/ISSUE_TEMPLATE/`, none of these defaults is used there.
-- The bug and feature forms apply the `bug` and `enhancement` labels, which GitHub creates in every new repository.
+- The forms set the account's issue type with `type:` and apply no labels. The label set is [`.github/labels.tsv`](.github/labels.tsv) (labels v2): if a form ever applies a label, it must exist here and in every repository that uses the form.
+- Inherited files are not in clones: agents read them here.
 - `SECURITY.md` relies on private vulnerability reporting, which is enabled per repository (Settings → Code security).
 - A license cannot be inherited; every repository needs its own `LICENSE`.
 
@@ -144,9 +145,9 @@ Permissions: `contents: read`, `issues: write`.
 File format: one label per line, tab-separated `name`, `color` (six hex digits, no `#`) and `description` (may be empty). Blank lines and lines starting with `#` are ignored.
 
 ```tsv
-# name	color	description
-bug	d73a4a	Something does not work
-enhancement	a2eeef	New feature or request
+# name	color	description (labels v2: see .github/labels.tsv)
+needs info	fbca04	Waiting for more information from the author
+good first issue	7057ff	Good for newcomers
 ```
 
 ```yaml
