@@ -2,6 +2,8 @@ name: AI footer
 
 # This repository's own use of the reusable AI footer strip, by local path.
 on:
+  pull_request:
+    types: [opened, edited]
   issues:
     types: [opened, edited]
   issue_comment:

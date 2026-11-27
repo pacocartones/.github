@@ -64,10 +64,11 @@ function run({ event = 'issue_comment', body, author = 'pacocartones' }) {
       REPO: 'pacocartones/repo',
       EVENT: event,
       AUTHOR: author,
-      ISSUE_BODY: '', COMMENT_BODY: '', REVIEW_BODY: '',
+      ISSUE_BODY: '', COMMENT_BODY: '', REVIEW_BODY: '', PR_BODY: '',
       ISSUE: '7', PR: '', COMMENT_ID: '', REVIEW_ID: '', URL: '',
     };
     if (event === 'issues') Object.assign(env, { ISSUE_BODY: body, URL: 'https://github.com/pacocartones/repo/issues/7' });
+    if (event === 'pull_request') Object.assign(env, { ISSUE: '', PR: '8', PR_BODY: body, URL: 'https://github.com/pacocartones/repo/pull/8' });
     if (event === 'issue_comment') Object.assign(env, { ISSUE_BODY: 'the issue itself', COMMENT_BODY: body, COMMENT_ID: '101', URL: 'https://github.com/pacocartones/repo/issues/7#issuecomment-101' });
     if (event === 'pull_request_review_comment') Object.assign(env, { ISSUE: '', PR: '8', COMMENT_BODY: body, COMMENT_ID: '202', URL: 'https://github.com/pacocartones/repo/pull/8#discussion_r202' });
     if (event === 'pull_request_review') Object.assign(env, { ISSUE: '', PR: '8', REVIEW_BODY: body, REVIEW_ID: '303', URL: 'https://github.com/pacocartones/repo/pull/8#pullrequestreview-303' });
@@ -188,6 +189,7 @@ test('only the maintainer account is edited', () => {
 test('each event is written back to its own endpoint, with a notice and a summary line', () => {
   const cases = {
     issues: ['repos/pacocartones/repo/issues/7', '7', 'https://github.com/pacocartones/repo/issues/7'],
+    pull_request: ['repos/pacocartones/repo/pulls/8', '8', 'https://github.com/pacocartones/repo/pull/8'],
     issue_comment: ['repos/pacocartones/repo/issues/comments/101', '101', 'https://github.com/pacocartones/repo/issues/7#issuecomment-101'],
     pull_request_review_comment: ['repos/pacocartones/repo/pulls/comments/202', '202', 'https://github.com/pacocartones/repo/pull/8#discussion_r202'],
     pull_request_review: ['repos/pacocartones/repo/pulls/8/reviews/303', '303', 'https://github.com/pacocartones/repo/pull/8#pullrequestreview-303'],
@@ -208,5 +210,12 @@ test('each event is written back to its own endpoint, with a notice and a summar
 test('the event body is read from its own variable, not from another event field', () => {
   // On issue_comment the issue body is also set; only the comment is edited.
   const r = run({ event: 'issue_comment', body: 'No footer here.' });
+  assert.equal(r.args, null, r.out);
+});
+
+test('a pull request description is covered: the job runs on pull_request opened and edited by the maintainer', () => {
+  assert.match(WORKFLOW, /github\.event_name == 'pull_request' &&\n\s+\(github\.event\.action == 'opened' \|\| github\.event\.action == 'edited'\) &&\n\s+github\.event\.pull_request\.user\.login == 'pacocartones'/);
+  assert.match(WORKFLOW, /\n {6}PR_BODY: \$\{\{ github\.event\.pull_request\.body \}\}\n/);
+  const r = run({ event: 'pull_request', body: 'No footer here.' });
   assert.equal(r.args, null, r.out);
 });
