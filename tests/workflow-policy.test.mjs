@@ -52,11 +52,12 @@ function runLines(lines) {
   return inRun;
 }
 
-/** The trigger names under the top-level `on:` key. */
+/** The trigger names under the top-level `on:` key, also written quoted (`'on':`, as YAML 1.1 linters want). */
+const ON = /^(?:on|'on'|"on"):/;
 function triggers(lines) {
-  const at = lines.findIndex((l) => /^on:/.test(l));
+  const at = lines.findIndex((l) => ON.test(l));
   if (at < 0) return [];
-  const inline = lines[at].match(/^on:\s*\[?([^\]#]+)\]?/);
+  const inline = lines[at].replace(ON, '').match(/^\s*\[?([^\]#]+)\]?/);
   if (inline && inline[1].trim()) return inline[1].split(',').map((s) => s.trim());
   const names = [];
   for (let i = at + 1; i < lines.length && (lines[i].trim() === '' || lines[i].startsWith(' ') || lines[i].startsWith('#')); i++) {
@@ -158,6 +159,10 @@ test('the line parsers find triggers, jobs, run scripts and checkout steps', () 
   ];
   assert.deepEqual(triggers(sample), ['pull_request_target', 'push']);
   assert.deepEqual(triggers(['on: [push, pull_request]']), ['push', 'pull_request']);
+  assert.deepEqual(triggers(["'on':", '  # a comment', '  branch_protection_rule:', '  push:', "    branches: ['main']", 'permissions: {}']), ['branch_protection_rule', 'push']);
+  assert.deepEqual(triggers(['"on": [workflow_call]']), ['workflow_call']);
+  assert.deepEqual(triggers(["'on': pull_request_target"]), ['pull_request_target']);
+  assert.deepEqual(triggers(['online: true', "'one':", '  push:']), [], 'only the on key itself');
   assert.deepEqual(jobs(sample).map((j) => j.name), ['a', 'b-2']);
   assert.ok(jobs(sample)[1].lines.some((l) => /^ {4}permissions:/.test(l)));
   assert.ok(!jobs(sample)[0].lines.some((l) => /^ {4}permissions:/.test(l)));

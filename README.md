@@ -72,7 +72,7 @@ jobs:
 
 1. A commit whose author or committer looks like the maintainer (the maintainer name or login, or the login's noreply address) must use exactly the maintainer name and email.
 2. Such a commit carries no AI co-author trailer (`Co-authored-by: Claude …`, `Copilot`, `Codex`, …) and no "Generated with/by …" footer. Other contributors keep their own identities and attribution choices.
-3. A pull request from a branch of the repository itself uses a branch name matching `branch-pattern`. Branches in forks are not checked; Dependabot's `dependabot/*` branches are exempt.
+3. A pull request from a branch of the repository itself uses a branch name matching `branch-pattern`. The default is the standards v2 rule: `<type>/<short-slug>` in lowercase `a-z`, `0-9` and hyphens, with dots only in a `vX.Y.Z` segment (`docs/pin-action-v1.8.0`), or `release/vX.Y.Z` for the pull request that prepares that release. Branches in forks are not checked; Dependabot's `dependabot/*` branches are exempt.
 
 Outside a pull request it does nothing and passes.
 
@@ -81,7 +81,7 @@ Outside a pull request it does nothing and passes.
 | `maintainer-name` | `Paco Cartones` | The maintainer's `git user.name`. |
 | `maintainer-email` | `253313177+pacocartones@users.noreply.github.com` | The maintainer's `git user.email`. |
 | `maintainer-login` | `pacocartones` | The maintainer's GitHub login. |
-| `branch-pattern` | `^(feat\|fix\|docs\|data\|test\|ci\|chore\|refactor)/[a-z0-9-]+$` | Extended regex for branch names. |
+| `branch-pattern` | `^((feat\|fix\|docs\|data\|test\|ci\|chore\|refactor)/((([a-z0-9]*\|v[0-9]+\.[0-9]+\.[0-9]+)-)+([a-z0-9]*\|v[0-9]+\.[0-9]+\.[0-9]+)\|[a-z0-9]+\|v[0-9]+\.[0-9]+\.[0-9]+)\|release/v[0-9]+\.[0-9]+\.[0-9]+)$` | Extended regex for branch names (standards v2, see rule 3). |
 
 Permissions: `contents: read`.
 
@@ -198,7 +198,7 @@ This repository has no releases, tags or CHANGELOG: callers pin its reusable wor
 
 ## Developing this repository
 
-[`ci.yml`](.github/workflows/ci.yml) runs on every pull request and push to `main`: [actionlint](https://github.com/rhysd/actionlint) (with shellcheck) on every workflow, the tests through the local `verify.yml`, and the local `commit-policy.yml`.
+[`ci.yml`](.github/workflows/ci.yml) runs on every pull request and push to `main`: [actionlint](https://github.com/rhysd/actionlint) (with shellcheck) on every workflow, the tests through the local `verify.yml`, the local `commit-policy.yml`, and CodeQL (`javascript-typescript`) through the local `codeql.yml`. [`scorecard.yml`](.github/workflows/scorecard.yml) runs OpenSSF Scorecard on pushes to `main`, weekly and on branch-protection changes. [`.github/actionlint.yaml`](.github/actionlint.yaml) lets actionlint accept the top-level `cache-mode` key in that file only, until actionlint knows it.
 
 ```bash
 npm test

@@ -8,7 +8,8 @@ name: Commit policy
 #  2. Such a commit carries no AI co-author trailer or "generated with/by" footer.
 #     Other contributors keep their own identities and attribution choices.
 #  3. A pull request from a branch of the repository itself uses a branch name that
-#     matches `branch-pattern`. Branches in forks are not checked; Dependabot's
+#     matches `branch-pattern` (by default standards v2: type/short-slug, dots only in a
+#     vX.Y.Z segment, or release/vX.Y.Z). Branches in forks are not checked; Dependabot's
 #     dependabot/* branches are exempt.
 # Ported from free-llm-api-hub's scripts/check-commit-policy.sh. tests/commit-policy.test.mjs
 # runs the script below as it is written here.
@@ -28,9 +29,9 @@ on:
         type: string
         default: pacocartones
       branch-pattern:
-        description: Extended regular expression that branch names must match.
+        description: Extended regular expression that branch names must match. The default is standards v2 (type/short-slug in a-z, 0-9 and hyphens, dots only in a vX.Y.Z segment, or release/vX.Y.Z).
         type: string
-        default: '^(feat|fix|docs|data|test|ci|chore|refactor)/[a-z0-9-]+$'
+        default: '^((feat|fix|docs|data|test|ci|chore|refactor)/((([a-z0-9]*|v[0-9]+\.[0-9]+\.[0-9]+)-)+([a-z0-9]*|v[0-9]+\.[0-9]+\.[0-9]+)|[a-z0-9]+|v[0-9]+\.[0-9]+\.[0-9]+)|release/v[0-9]+\.[0-9]+\.[0-9]+)$'
 
 permissions: {}
 
@@ -98,7 +99,7 @@ jobs:
             dependabot=0
             if [ "$pr_author" = 'dependabot[bot]' ] && [[ "$GITHUB_HEAD_REF" == dependabot/* ]]; then dependabot=1; fi
             if [ "$head_repo" = "${GITHUB_REPOSITORY:-}" ] && [ "$dependabot" -eq 0 ] && ! printf '%s' "$GITHUB_HEAD_REF" | grep -Eq -- "$BRANCH_PATTERN"; then
-              echo "::error title=Branch name::The branch name '$GITHUB_HEAD_REF' does not match $BRANCH_PATTERN. Use <type>/<short-slug>, for example fix/broken-link; rename the branch and push again."
+              echo "::error title=Branch name::The branch name '$GITHUB_HEAD_REF' does not match $BRANCH_PATTERN. Use <type>/<short-slug>, for example fix/broken-link or docs/pin-action-v1.8.0 (dots only in a vX.Y.Z segment), or release/vX.Y.Z; rename the branch and push again."
               fail=1
             fi
           fi
