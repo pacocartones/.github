@@ -1,7 +1,8 @@
 name: CI
 
 # This repository's own checks: actionlint on every workflow, the policy tests
-# (npm test) through the reusable Verify workflow, and the reusable Commit policy.
+# (npm test) through the reusable Verify workflow, the reusable Commit policy, and
+# CodeQL (JavaScript/TypeScript) through the reusable CodeQL workflow.
 on:
   pull_request:
   push:
@@ -43,3 +44,14 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/commit-policy.yml
+
+  codeql:
+    name: CodeQL
+    # What codeql.yml's analyze job needs; a called workflow gets no more than this.
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    uses: ./.github/workflows/codeql.yml
+    with:
+      language: javascript-typescript
