@@ -1,0 +1,22 @@
+name: AI footer
+
+# This repository's own use of the reusable AI footer strip, by local path.
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted, edited]
+
+permissions: {}
+
+jobs:
+  strip:
+    name: AI footer strip
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/ai-footer-strip.yml
