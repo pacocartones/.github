@@ -19,7 +19,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIR = join(ROOT, '.github/workflows');
 const WORKFLOWS = readdirSync(DIR).filter((n) => /\.ya?ml$/.test(n)).sort()
   .map((name) => ({ name, lines: readFileSync(join(DIR, name), 'utf8').replace(/\r\n/g, '\n').split('\n') }));
-const REUSABLE = ['codeql.yml', 'commit-policy.yml', 'labels-sync.yml', 'verify.yml'];
+const REUSABLE = ['ai-footer-strip.yml', 'codeql.yml', 'commit-policy.yml', 'labels-sync.yml', 'verify.yml'];
 
 const indent = (line) => line.match(/^ */)[0].length;
 const code = (line) => line.replace(/\s+#.*$/, '');
