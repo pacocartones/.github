@@ -200,7 +200,7 @@ test('each event is written back to its own endpoint, with a notice and a summar
     assert.equal(r.args[method + 1], event === 'pull_request_review' ? 'PUT' : 'PATCH', `${event}: ${r.args}`);
     assert.ok(r.args.includes(endpoint), `${event}: ${r.args}`);
     assert.deepEqual(r.payload, { body: `Text of ${event}.` }, event);
-    assert.match(r.out, new RegExp(`::notice::.*${event}.*${id}.*${url.replace(/[.?#]/g, '\\$&')}`), event);
+    assert.match(r.out, new RegExp(`::notice::.*${event}.*${id}.*${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`), event);
     assert.ok(r.summary.includes(event) && r.summary.includes(id) && r.summary.includes(url), `${event} summary: ${r.summary}`);
   }
 });
