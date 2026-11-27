@@ -198,7 +198,7 @@ This repository has no releases, tags or CHANGELOG: callers pin its reusable wor
 
 ## Developing this repository
 
-[`ci.yml`](.github/workflows/ci.yml) runs on every pull request and push to `main`: [actionlint](https://github.com/rhysd/actionlint) (with shellcheck) on every workflow, the tests through the local `verify.yml`, and the local `commit-policy.yml`.
+[`ci.yml`](.github/workflows/ci.yml) runs on every pull request and push to `main`: [actionlint](https://github.com/rhysd/actionlint) (with shellcheck) on every workflow, the tests through the local `verify.yml`, the local `commit-policy.yml`, and CodeQL (`javascript-typescript`) through the local `codeql.yml`. [`scorecard.yml`](.github/workflows/scorecard.yml) runs OpenSSF Scorecard on pushes to `main`, weekly and on branch-protection changes. [`.github/actionlint.yaml`](.github/actionlint.yaml) lets actionlint accept the top-level `cache-mode` key in that file only, until actionlint knows it.
 
 ```bash
 npm test
