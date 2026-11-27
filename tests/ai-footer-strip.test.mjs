@@ -27,8 +27,16 @@ function stripScript(text) {
 
 const SCRIPT = stripScript(WORKFLOW);
 
-// The fake gh writes its arguments and its standard input (the JSON payload) to files.
-const FAKE_GH = '#!/bin/sh\nprintf \'%s\\n\' "$@" > "$FAKE_DIR/args"\ncat > "$FAKE_DIR/stdin"\n';
+// The fake gh writes its arguments, and the JSON payload it was given with --input, to files.
+const FAKE_GH = [
+  '#!/bin/sh',
+  'printf \'%s\\n\' "$@" > "$FAKE_DIR/args"',
+  'while [ $# -gt 0 ]; do',
+  '  if [ "$1" = --input ]; then if [ "$2" = - ]; then cat; else cat "$2"; fi > "$FAKE_DIR/stdin"; fi',
+  '  shift',
+  'done',
+  '',
+].join('\n');
 
 /**
  * Run the script for one event. `body` is the text of the issue, comment or review.
