@@ -8,6 +8,6 @@ Only the latest release (the highest `vX.Y.Z` tag) receives security fixes. A re
 
 ## Reporting a Vulnerability
 
-To report a security issue, please use [GitHub private vulnerability reporting](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-privately): open the repository's **Security** tab and choose **Report a vulnerability**. Include a description of the issue, the steps you took to create the issue, affected versions, and, if known, mitigations for the issue. Do not open a public issue. Our vulnerability management team will respond within 3 working days of your report. If the issue is confirmed as a vulnerability, we will open a Security Advisory. This project follows a 90 day disclosure timeline.
+To report a security issue, please use [GitHub private vulnerability reporting](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-privately): open the repository's **Security** tab and choose **Report a vulnerability**. Include a description of the issue, the steps you took to create the issue, affected versions, and, if known, mitigations for the issue. Do not open a public issue. Our vulnerability management team will respond within 3 working days of your report (best effort). If the issue is confirmed as a vulnerability, we will open a Security Advisory. This project follows a 90 day disclosure timeline.
 
 Private repositories have no reporting form: collaborators tell the maintainer directly.
