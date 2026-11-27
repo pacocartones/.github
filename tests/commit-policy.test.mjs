@@ -75,7 +75,9 @@ test('the inputs default to the maintainer identity and the branch naming rule',
   assert.equal(inputDefault('maintainer-name'), PACO.name);
   assert.equal(inputDefault('maintainer-email'), PACO.email);
   assert.equal(inputDefault('maintainer-login'), 'pacocartones');
-  assert.equal(inputDefault('branch-pattern'), '^(feat|fix|docs|data|test|ci|chore|refactor)/[a-z0-9-]+$');
+  const version = String.raw`v[0-9]+\.[0-9]+\.[0-9]+`;
+  assert.equal(inputDefault('branch-pattern'),
+    `^((feat|fix|docs|data|test|ci|chore|refactor)/((([a-z0-9]*|${version})-)+([a-z0-9]*|${version})|[a-z0-9]+|${version})|release/${version})$`);
 });
 
 test('a clean maintainer commit passes', () => {
@@ -114,6 +116,24 @@ test('branch names are checked on branches of the repository itself', () => {
   assert.equal(run({ ...PACO, branch: 'feat/initial-workflows' }).code, 0);
   assert.equal(run({ ...PACO, branch: 'ci/actionlint-2' }).code, 0);
   for (const branch of ['my-branch', 'feature/x', 'feat/Upper', 'feat/', 'claude/some-task']) {
+    const r = run({ ...PACO, branch });
+    assert.equal(r.code, 1, `${branch}\n${r.out}`);
+    assert.match(r.out, /Branch name/);
+  }
+});
+
+// Standards v2: dots only inside a version segment (vX.Y.Z between hyphens), and
+// release/vX.Y.Z for the pull request that prepares that release.
+test('branch names allow a version segment and release/vX.Y.Z, nothing looser', () => {
+  for (const branch of ['release/v1.2.3', 'docs/pin-action-v1.8.0', 'chore/bump-v1.2.3-to-v1.3.0', 'fix/v10.0.1-regression', 'feat/initial-workflows']) {
+    const r = run({ ...PACO, branch });
+    assert.equal(r.code, 0, `${branch}\n${r.out}`);
+  }
+  for (const branch of [
+    'docs/Pin-Action', 'docs/pin action', 'docs/a.b', 'docs/pin-action.v1.8.0', 'docs/pinv1.8.0', 'docs/pin-v1.8.0x',
+    'docs/pin-v1.8', 'docs/pin-1.8.0', 'docs/pin-v1.8.0.1', 'docs/.', 'release/', 'release/next', 'release/v1.2',
+    'release/1.2.3', 'release/v1.2.3-rc', 'release/V1.2.3', 'releases/v1.2.3',
+  ]) {
     const r = run({ ...PACO, branch });
     assert.equal(r.code, 1, `${branch}\n${r.out}`);
     assert.match(r.out, /Branch name/);
